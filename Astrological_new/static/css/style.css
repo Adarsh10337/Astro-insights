@@ -1,0 +1,249 @@
+body {
+    font-family: 'Arial', sans-serif;
+}
+
+/* Top Ribbon */
+.top-ribbon {
+    background-color: #553c9a;
+    color: white;
+}
+
+/* Header */
+header {
+    background-color: #6b46c1;
+}
+
+/* Banner */
+.banner {
+    background-image: url('/static/back.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+/* Services Section */
+.service-card {
+    transition: transform 0.3s ease-in-out;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Scrolling animations */
+@keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+.scroll-container {
+    overflow: hidden;
+    width: 100%;
+}
+
+.scroll-content {
+    display: flex;
+    animation: scroll 30s linear infinite;
+}
+
+.testimonial-card {
+    flex: 0 0 300px;
+    margin-right: 20px;
+}
+
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(calc(-300px * 3));
+    }
+}
+
+@media (max-width: 640px) {
+    .testimonial-card {
+        flex: 0 0 80%;
+    }
+
+    @keyframes scroll {
+        0% {
+            transform: translateX(0);
+        }
+        100% {
+            transform: translateX(calc(-80% * 3));
+        }
+    }
+}
+
+.scroll-content:hover {
+    animation-play-state: paused;
+}
+
+.service-card, .testimonial-card {
+    flex: 0 0 auto;
+    width: 250px;
+    margin-right: 20px;
+}
+
+/* Testimonials */
+.testimonial-container {
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: #9f7aea #e9d5ff;
+    padding-bottom: 20px;
+}
+
+.testimonial-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.testimonial-container::-webkit-scrollbar-track {
+    background: #e9d5ff;
+}
+
+.testimonial-container::-webkit-scrollbar-thumb {
+    background-color: #9f7aea;
+    border-radius: 20px;
+    border: 3px solid #e9d5ff;
+}
+
+.testimonial-wrapper {
+    display: inline-flex;
+    flex-wrap: nowrap;
+}
+
+.testimonial-card {
+    flex: 0 0 auto;
+    width: 300px;
+    margin-right: 20px;
+    white-space: normal;
+}
+
+.testimonial-card:last-child {
+    margin-right: 0;
+}
+
+/* Astrologer cards */
+.astrologer-card {
+    transition: transform 0.3s ease-in-out;
+}
+
+.astrologer-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Login/Register Modal */
+#loginRegisterModal {
+    transition: opacity 0.3s ease-in-out;
+}
+
+#loginRegisterModal.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#loginRegisterModal.flex {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* User Menu */
+#userMenu {
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+}
+
+#userMenu.hidden {
+    display: none;
+}
+
+#userMenu:not(.hidden) {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 640px) {
+    .service-card, .testimonial-card {
+        width: 80%;
+        margin-right: 10px;
+    }
+
+    .astrologers-container {
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 20px;
+    }
+
+    .astrologers-scroll {
+        display: inline-flex;
+        animation: scrollAstrologers 30s linear infinite;
+    }
+
+    .astrologer-card {
+        flex: 0 0 auto;
+        width: 80%;
+        margin-right: 20px;
+        white-space: normal;
+    }
+
+    @keyframes scrollAstrologers {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-100%); }
+    }
+
+    /* Mobile menu styles */
+    #menu {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        height: 100vh;
+        background-color: #553c9a;
+        transition: right 0.3s ease-in-out;
+        z-index: 1000;
+        padding-top: 60px;
+    }
+
+    #menu.active {
+        right: 0;
+    }
+
+    #menu-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+        z-index: 999;
+    }
+
+    #menu-overlay.active {
+        display: block;
+    }
+}
+
+@media (max-width: 640px) {
+    .modal > div {
+        margin: 0 1rem;
+        max-height: calc(100vh - 2rem);
+        overflow-y: auto;
+    }
+}
+
+@media (max-width: 640px) {
+    #menu {
+        transition: transform 0.3s ease-in-out;
+    }
+    
+    #menu.translate-x-0 {
+        transform: translateX(0);
+    }
+}

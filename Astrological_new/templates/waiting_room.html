@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+{% block title %}Waiting for {{ astrologer }}{% endblock %}
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-4">Waiting Room</h1>
+    <p class="mb-4">You are currently in line to chat with {{ astrologer }}.</p>
+    <p class="text-xl font-semibold">Your position in queue: {{ queue_position }}</p>
+    <div id="queue-status" class="mt-8">
+        <p>Please wait. You will be automatically connected when it's your turn.</p>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script>
+    const socket = io();
+    socket.on('chat_available', function(data) {
+        if (data.astrologer === '{{ astrologer }}') {
+            window.location.href = '{{ url_for("call", astrologer=astrologer) }}';
+        }
+    });
+</script>
+{% endblock %}

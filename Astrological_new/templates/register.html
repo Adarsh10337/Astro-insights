@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astrology App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a2e;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            color: #ffa500;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .subheader {
+            text-align: center;
+            color: #ffffff;
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+        .phone {
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 20px;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .user-greeting {
+            font-weight: bold;
+        }
+        .balance {
+            background-color: #ffe4b5;
+            padding: 5px 10px;
+            border-radius: 10px;
+        }
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .filter-btn {
+            background-color: #f0f0f0;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 15px;
+        }
+        .search-bar {
+            width: 100%;
+            padding: 10px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+        }
+        .astrologer {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .astrologer-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .astrologer-info {
+            flex-grow: 1;
+        }
+        .astrologer-name {
+            font-weight: bold;
+            color: #333;
+        }
+        .astrologer-details {
+            font-size: 12px;
+            color: #666;
+        }
+        .action-btns {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        .action-btn {
+            flex-grow: 1;
+            padding: 5px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: white;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">CHAT OR CALL INSTANTLY</div>
+    <div class="subheader">600+ Astrologers!</div>
+    <div class="phone">
+        <div class="app-header">
+            <span class="user-greeting">Hello, Ayushh 🙏</span>
+            <span class="balance">₹42101</span>
+        </div>
+        <div class="filters">
+            <button class="filter-btn">Skills ▼</button>
+            <button class="filter-btn">Price ▼</button>
+            <button class="filter-btn">Languages ▼</button>
+        </div>
+        <input type="text" class="search-bar" placeholder="Search Astro">
+        
+        <!-- 15 Dummy Astrologers -->
+        <div class="astrologer">
+            <img src="/api/placeholder/60/60" alt="Astro Monica" class="astrologer-img">
+            <div class="astrologer-info">
+                <div class="astrologer-name">Astro Monica <span style="color: orange;">4.98★</span></div>
+                <div class="astrologer-details">Exp - 21+ years</div>
+                <div class="astrologer-details">Vedic Astrology, Love Astrology, Numerology and Tarot Expert</div>
+                <div class="astrologer-details">Hindi</div>
+                <div class="action-btns">
+                    <button class="action-btn">Call ₹60/40/min</button>
+                    <button class="action-btn">Chat ₹60/40/min</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="astrologer">
+            <img src="/api/placeholder/60/60" alt="Tarot Paramjeet" class="astrologer-img">
+            <div class="astrologer-info">
+                <div class="astrologer-name">Tarot Paramjeet <span style="color: orange;">4.92★</span></div>
+                <div class="astrologer-details">Exp - 9+ years</div>
+                <div class="astrologer-details">Love Astrology, Tarot Expert</div>
+                <div class="astrologer-details">Punjabi, English, Hindi</div>
+                <div class="action-btns">
+                    <button class="action-btn">Call ₹30/22/min</button>
+                    <button class="action-btn">Chat ₹30/22/min</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="astrologer">
+            <img src="/api/placeholder/60/60" alt="Astro Gopinath" class="astrologer-img">
+            <div class="astrologer-info">
+                <div class="astrologer-name">Astro Gopinath <span style="color: orange;">5.0★</span></div>
+                <div class="astrologer-details">Exp - 24+ years</div>
+                <div class="astrologer-details">Vedic Astrology, Love, Career, Finances</div>
+                <div class="astrologer-details">Tamil, English</div>
+                <div class="action-btns">
+                    <button class="action-btn">Call ₹50/35/min</button>
+                    <button class="action-btn">Chat ₹50/35/min</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="astrologer">
+            <img src="/api/placeholder/60/60" alt="Zodiac Zara" class="astrologer-img">
+            <div class="astrologer-info">
+                <div class="astrologer-name">Zodiac Zara <span style="color: orange;">4.85★</span></div>
+                <div class="astrologer-details">Exp - 15 years</div>
+                <div class="astrologer-details">Western Astrology, Horoscope Reading</div>
+                <div class="astrologer-details">English, Spanish</div>
+                <div class="action-btns">
+                    <button class="action-btn">Call ₹45/30/min</button>
+                    <button class="action-btn">Chat ₹45/30/min</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="astrologer">
+            <img src="/api/placeholder/60/60" alt="Cosmic Chandra" class="astrologer-img">
+            <div class="astrologer-info">
+                <div class="astrologer-name">Cosmic Chandra <span style="color: orange;">4.97★</span></div>
+                <div class="astrologer-details">Exp - 30+ years</div>
+                <div class="astrologer-details">Vedic Astrology, Gemology, Vastu</div>
+                <div class="astrologer-details">Sanskrit, Hindi, English</div>
+                <div class="action-btns">
+                    <button class="action-btn">Call ₹70/50/min</button>
+                    <button class="action-btn">Chat ₹70/50/min</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="astrologer">
+            <img src="/api/placeholder/60/60" alt="Mystic Maya" class="astrologer-img">
+            <div class="astrologer-info">
+                <div class="astrologer-name">Mystic Maya <span style="color: orange;">4.89★</span></div>
+                <div class="astrologer-details">Exp - 12 years</div>
+                <div class="astrologer-details">Tarot Reading, Crystal Healing</div>
+                <div class="astrologer-details">English, French</div>
+                <div class="action-btns">
+                    <button class="action-btn">Call ₹40/25/min</button>
+                    <button class="action-btn">Chat ₹40/25/min</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="astrologer">
+            <img src="/api/placeholder/60/60" alt="Stellar Suresh" class="astrologer-img">
+            <div class="astrologer-info">
+                <div class="astrologer-name">Stellar Suresh <span style="color: orange;">4.95★</span></div>
+                <div class="astrologer-details">Exp - 18 years</div>
+                <div class="astrologer-details">Numerology, Palmistry</div>
+                <div class="astrologer-details">Malayalam, English</div>
+                <div class="action-btns">
+                    <button class="action-btn">Call ₹55/40/min</button>
+                    <button class="action-btn">Chat ₹55/40/min</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="astrologer">
+            <img src="/api/placeholder/60/60" alt="Lunar Luna" class="astrologer-img">
+            <div class="astrologer-info">
+                <div class="astrologer-name">Lunar Luna <span style="color: orange;">4.91★</span></div>
+                <div class="astrologer-details">Exp - 10 years</div>
+                <div class="astrologer-details">Moon Sign Astrology, Emotional Healing</div>
+                <div class="astrologer-details">English, Italian</div>
+                <div class="action-btns">
+                    <button class="action-btn">Call ₹35/20/min</button>
+                    <button class="action-btn">Chat ₹35/20/min</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="astrologer">
+            <img src="/api/placeholder/60/60" alt="Karmic Karan" class="astrologer-img">
+            <div class="astrologer-info">
+                <div class="astrologer-name">Karmic Karan <span style="color: orange;">4.88★</span></div>
+                <div class="astrologer-details">Exp - 14 years</div>
+                <div class="astrologer-details">Karmic Astrology, Past Life Reading</div>
+                <div class="astrologer-details">Hindi, English</div>
+                <div class="action-btns">
+                    <button class="action-btn">Call ₹50/35/min</button>
+                    <button class="action-btn">Chat ₹50/35/min</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="astrologer">
+            <img src="/api/placeholder/60/60" alt="Zodiac Zoe" class="astrologer-img">
+            <div class="astrologer-info">
+                <div class="astrologer-name">Zodiac Zoe <span style="color: orange;">4.93★</span></div>
+                <div class="astrologer-details">Exp - 16 years</div>
+                <div class="astrologer-details">Chinese Astrology, I-Ching</div>
+                <div class="astrologer-details">English, Mandarin</div>
+                <div class="action-btns">
+                    <button class="action-btn">Call ₹60/45/min</button>
+                    <button class="action-btn">Chat ₹60/45/min</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="astrologer">
+            <img src="/api/placeholder/60/60" alt="Cosmic Carl" class="astrologer-img">
+            <div class="astrologer-info">
+                <div class="astrologer-name">Cosmic Carl <span style="color: orange;">4.87★</span></div>
+                <div class="astrologer-details">Exp - 11 years</div>
+                <div class="astrologer-details">Evolutionary Astrology, Soul Purpose Reading</div>
+                <div class="astrologer-details">English, German</div>
+                <div class="action-btns">
+                    <button class="action-btn">Call ₹45/30/min</button>
+                    <button class="action-btn">Chat ₹45/30/min</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="astrologer">
+            <img src="/api/placeholder/60/60" alt="Vedic Vishnu" class="astrologer-img">
+            <div class="astrologer-info">
+                <div class="astrologer-name">Vedic Vishnu <span style="color: orange;">4.99★</span></div>
+                <div class="astrologer-details">Exp - 25+ years</div>
+                <div class="astrologer-details">Vedic Astrology, Jyotish</div>
+                <div class="astrologer-details">Sanskrit, Hindi, English</div>
+                <div class="action-btns">
+                    <button class="action-btn">Call ₹75/55/min</button>
+                    <button class="action-btn">Chat ₹75/55/min</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="astrologer">
+            <img src="/api/placeholder/60/60" alt="Psychic Priya" class="astrologer-img">
+            <div class="astrologer-info">
+                <div class="astrologer-name">Psychic Priya <span style="color: orange;">4.86★</span></div>
+                <div class="astrologer-details">Exp - 13 years</div>
+                <div class="astrologer-details">Psychic Reading, Aura Reading</div>
+                <div class="astrologer-details">Hindi, English, Gujarati</div>
+                <div class="action-btns">
+                    <button class="action-btn">Call ₹55/40/min</button>
+                    <button class="action-btn">Chat ₹55/40/min</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="astrologer">
+            <img src="/api/placeholder/60/60" alt="Numerology Nina" class="astrologer-img">

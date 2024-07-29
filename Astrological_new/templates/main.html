@@ -1,0 +1,62 @@
+{% extends 'layout.html' %}
+{% block title %}Astro Insights - Home{% endblock %}
+{% block content %}
+
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8 text-center">Welcome to Astro Insights</h1>
+
+    {% if session.username %}
+        <p>Welcome, {{ session.username }}!</p>
+    {% endif %}
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for username, astrologer in astrologers.items() %}
+            {% if astrologer.role == 'astrologer' %}
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold mb-4">{{ astrologer.name }}</h2>
+                    {% if astrologer.experience %}
+                        <p><strong>Experience:</strong> {{ astrologer.experience }} years</p>
+                    {% endif %}
+                    {% if astrologer.expertise %}
+                        <p><strong>Expertise:</strong> {{ astrologer.expertise }}</p>
+                    {% endif %}
+                    {% if astrologer.details %}
+                        <p><strong>Details:</strong> {{ astrologer.details }}</p>
+                    {% endif %}
+                    {% if astrologer.image_path %}
+                    <img src="{{ url_for('static', filename=astrologer.image_path) }}" 
+                            alt="{{ astrologer.name }}" 
+                            class="mt-4 w-full h-40 object-cover rounded astrologer-image"
+                            data-default-src="{{ url_for('static', filename='images/default.png') }}">
+                    {% else %}
+                    <img src="{{ url_for('static', filename='images/default.png') }}"
+                            alt="Default Image"
+                            class="mt-4 w-full h-40 object-cover rounded">
+                    {% endif %}
+                                        {% if session.username and session.role == 'user' %}
+                        <form action="{{ url_for('call') }}" method="post">
+                            <input type="hidden" name="astrologer" value="{{ username }}">
+                            <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 inline-block mt-4">Call Now</button>
+                        </form>
+                    {% elif not session.username %}
+                        <a href="{{ url_for('index') }}" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 inline-block mt-4">Login to Call</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var images = document.querySelectorAll('.astrologer-image');
+        images.forEach(function(img) {
+            img.onerror = function() {
+                this.onerror = null;
+                this.src = this.getAttribute('data-default-src');
+            };
+        });
+    });
+    </script>

@@ -1,0 +1,165 @@
+{% extends 'layout.html' %}
+{% block title %}Astrologer Dashboard{% endblock %}
+{% block content %}
+
+<div class="bg-purple-700 text-white p-4">
+    <div class="container mx-auto flex justify-between items-center">
+        <h1 id="astrologer-dashboard" class="text-xl sm:text-2xl font-bold">Astrologer Dashboard</h1>
+        <button id="menuToggle" class="sm:hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+            </svg>
+        </button>
+    </div>
+</div>
+
+<div id="mobileMenu" class="hidden sm:block bg-purple-600 text-white p-4">
+    <a href="#" id="workHistoryBtn" class="block py-2 hover:text-purple-200">Work History</a>
+    <a href="#" id="activeChatsBtn" class="block py-2 hover:text-purple-200">Active Chats</a>
+    <a href="{{ url_for('logout') }}" class="block py-2 hover:text-purple-200">Logout</a>
+</div>
+
+<div class="container mx-auto mt-4 p-4" role="main">
+    <h2 id="welcome-astrologer" class="text-xl sm:text-2xl font-bold mb-4">Welcome, {{ astrologer }}</h2>
+
+    <div id="activeChats" class="bg-white rounded-lg shadow p-4 mb-6">
+        <h3 id="active-chats" class="text-lg sm:text-xl font-bold mb-4">Active Chats</h3>
+        <div id="chatList" class="space-y-2">
+            <!-- Active chats will be dynamically added here -->
+        </div>
+    </div>
+
+    <div id="chatWindow" class="bg-white rounded-lg shadow p-4 hidden">
+        <h3 id="chatTitle" class="text-lg sm:text-xl font-bold mb-4">Chat with <span id="currentUser"></span></h3>
+        <div id="messages" class="h-64 sm:h-96 overflow-y-auto mb-4 p-2 border rounded">
+            <!-- Chat messages will be dynamically added here -->
+        </div>
+        <div class="flex flex-col sm:flex-row mb-4">
+            <input type="text" id="message" class="flex-grow p-2 border rounded-l" placeholder="Type your message...">
+            <button onclick="sendMessage()" class="bg-purple-600 text-white px-4 py-2 rounded-r">Send</button>
+        </div>
+        <button onclick="leaveChat()" class="bg-red-500 text-white px-4 py-2 rounded">Leave Chat</button>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script>
+    const socket = io();
+    let currentRoom = null;
+    let lastSentMessage = null;
+
+    socket.on('connect', () => {
+        console.log('Connected to server');
+        socket.emit('join', { room: '{{ astrologer }}' });
+    });
+
+    socket.on('new_chat', (data) => {
+        console.log('New chat received:', data);
+        addActiveChatToList(data);
+    });
+
+    socket.on('message', (data) => {
+        console.log('Message received:', data);
+        if (currentRoom === data.room) {
+            // Check if this message is not the one we just sent
+            if (JSON.stringify(data) !== JSON.stringify(lastSentMessage)) {
+                updateChatMessages(data);
+            }
+            lastSentMessage = null; // Reset last sent message
+        }
+    });
+
+    socket.on('chat_ended', () => {
+        displaySystemMessage('The user has left the chat.');
+        document.getElementById('chatWindow').style.display = 'none';
+        removeActiveChatFromList(currentRoom);
+        currentRoom = null;
+    });
+
+    function addActiveChatToList(data) {
+        const chatList = document.getElementById('chatList');
+        const chatItem = document.createElement('div');
+        chatItem.id = `chat-${data.room}`;
+        chatItem.className = 'bg-purple-100 p-2 rounded';
+        chatItem.innerHTML = `
+            <p>User: ${data.user}</p>
+            <p>Room: ${data.room}</p>
+            <button onclick="joinChat('${data.room}')" class="bg-purple-500 text-white px-2 py-1 rounded mt-2">Join Chat</button>
+        `;
+        chatList.appendChild(chatItem);
+    }
+
+    function removeActiveChatFromList(room) {
+        const chatItem = document.getElementById(`chat-${room}`);
+        if (chatItem) {
+            chatItem.remove();
+        }
+    }
+
+    function joinChat(room) {
+        currentRoom = room;
+        socket.emit('join', { room: room });
+        document.getElementById('chatWindow').style.display = 'block';
+        document.getElementById('currentUser').textContent = room;
+        document.getElementById('messages').innerHTML = '';  // Clear previous messages
+        console.log('Joined chat room:', room);
+    }
+
+    function sendMessage() {
+        const messageInput = document.getElementById('message');
+        const message = messageInput.value.trim();
+        if (message && currentRoom) {
+            const messageData = { msg: message, user: '{{ astrologer }}', timestamp: Date.now() / 1000, room: currentRoom };
+            socket.emit('message', messageData);
+            lastSentMessage = messageData; // Store the last sent message
+            updateChatMessages(messageData); // Display the message locally
+            messageInput.value = '';
+        }
+    }
+
+    
+    function updateChatMessages(data) {
+        console.log('Updating chat messages:', data);
+        const messagesDiv = document.getElementById('messages');
+        const messageElement = document.createElement('div');
+        messageElement.className = 'mb-2';
+        const time = new Date(data.timestamp * 1000).toLocaleTimeString();
+        messageElement.innerHTML = `<strong>${data.user}</strong> (${time}): ${data.msg}`;
+        messagesDiv.appendChild(messageElement);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function displaySystemMessage(message) {
+        const messagesDiv = document.getElementById('messages');
+        const messageElement = document.createElement('div');
+        messageElement.className = 'mb-2 text-gray-500 italic';
+        messageElement.textContent = message;
+        messagesDiv.appendChild(messageElement);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function leaveChat() {
+        if (currentRoom) {
+            socket.emit('leave_chat', { room: currentRoom });
+            document.getElementById('chatWindow').style.display = 'none';
+            removeActiveChatFromList(currentRoom);
+            currentRoom = null;
+        }
+    }
+
+    // Add event listener for Enter key in message input
+    document.getElementById('message').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            sendMessage();
+        }
+    });
+
+    // Mobile menu toggle
+    document.getElementById('menuToggle').addEventListener('click', function() {
+        const mobileMenu = document.getElementById('mobileMenu');
+        mobileMenu.classList.toggle('hidden');
+    });
+</script>
+
+{% endblock %}

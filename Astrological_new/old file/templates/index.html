@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astro Insights - Your Personal Astrological Consultation</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Top Ribbon -->
+    <div class="bg-purple-800 text-white py-2 px-4">
+        <div class="container mx-auto text-center">
+            <p class="text-sm">🌟 Special Offer: 20% off on all consultations this week! 🌟</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-purple-700 text-white p-4">
+        <nav class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Astro Insights</h1>
+            <button id="menu-toggle" class="sm:hidden bg-purple-600 px-3 py-1 rounded">Menu</button>
+            <div id="menu-overlay"></div>
+            <ul id="menu" class="sm:flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+                <li><a href="/index" class="block hover:text-purple-200">Home</a></li>
+                <li><a href="/services" class="block hover:text-purple-200">Services</a></li>
+                <li><a href="/contact" class="block hover:text-purple-200">Contact</a></li>
+                <li><a href="/book" class="block bg-purple-500 hover:bg-purple-600 px-3 py-1 rounded">Book Now</a></li>
+                {% if 'username' not in session %}
+                    <li><a href="#" onclick="showLoginModal()" class="block hover:text-purple-200">Login</a></li>
+                    <li><a href="#" onclick="showRegisterModal()" class="block hover:text-purple-200">Register</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('logout') }}" class="block hover:text-purple-200">Logout</a></li>
+                    {% if session['role'] == 'astrologer' %}
+                        <li><a href="{{ url_for('dashboard') }}" class="block hover:text-purple-200">Dashboard</a></li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
+            <h3 class="text-lg font-bold mb-4">Login</h3>
+            <form action="{{ url_for('login') }}" method="post">
+                <input type="text" name="username" placeholder="Username" required class="w-full p-2 mb-4 border rounded">
+                <input type="password" name="password" placeholder="Password" required class="w-full p-2 mb-4 border rounded">
+                <button type="submit" class="w-full bg-purple-600 text-white p-2 rounded hover:bg-purple-700">Login</button>
+            </form>
+            <button onclick="hideLoginModal()" class="mt-4 w-full bg-gray-300 p-2 rounded hover:bg-gray-400">Close</button>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
+            <h3 class="text-lg font-bold mb-4">Register</h3>
+            <form action="{{ url_for('register') }}" method="post">
+                <input type="text" name="username" placeholder="Username" required class="w-full p-2 mb-4 border rounded">
+                <input type="password" name="password" placeholder="Password" required class="w-full p-2 mb-4 border rounded">
+                <select name="role" required class="w-full p-2 mb-4 border rounded">
+                    <option value="user">User</option>
+                    <option value="astrologer">Astrologer</option>
+                </select>
+                <button type="submit" class="w-full bg-purple-600 text-white p-2 rounded hover:bg-purple-700">Register</button>
+            </form>
+            <button onclick="hideRegisterModal()" class="mt-4 w-full bg-gray-300 p-2 rounded hover:bg-gray-400">Close</button>
+        </div>
+    </div>
+
+    <!-- Banner Image -->
+    <div class="w-full h-48 sm:h-96 bg-cover bg-center" style="background-image: url('/static/back.jpg');">
+        <div class="w-full h-full flex items-center justify-center bg-black bg-opacity-50">
+            <h2 class="text-2xl sm:text-4xl font-bold text-white text-center px-4">Discover Your Cosmic Path</h2>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="bg-{{ 'green' if category == 'success' else 'red' }}-100 border border-{{ 'green' if category == 'success' else 'red' }}-400 text-{{ 'green' if category == 'success' else 'red' }}-700 px-4 py-3 rounded relative" role="alert">
+                    <span class="block sm:inline">{{ message }}</span>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Services Section -->
+    <section class="py-8 sm:py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center">Our Services</h2>
+            <div class="scroll-container">
+                <div class="scroll-content">
+                    <!-- First set of cards -->
+                    <div class="service-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-star text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Vedic Astrology</h3>
+                        <p>Ancient wisdom for modern life</p>
+                    </div>
+                    <div class="service-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-home text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Vastu</h3>
+                        <p>Harmonize your living spaces</p>
+                    </div>
+                    <div class="service-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-question-circle text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Horary</h3>
+                        <p>Answers to your pressing questions</p>
+                    </div>
+                    <div class="service-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-sort-numeric-down text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Numerology</h3>
+                        <p>Unlock the power of numbers</p>
+                    </div>
+                    <div class="service-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-hand-paper text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Palmistry</h3>
+                        <p>Read the story in your hands</p>
+                    </div>
+                    <div class="service-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-user text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Face Reading</h3>
+                        <p>Discover insights from your features</p>
+                    </div>
+                    <!-- Duplicate set of cards -->
+                    <div class="service-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-star text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Vedic Astrology</h3>
+                        <p>Ancient wisdom for modern life</p>
+                    </div>
+                    <div class="service-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-home text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Vastu</h3>
+                        <p>Harmonize your living spaces</p>
+                    </div>
+                    <div class="service-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-question-circle text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Horary</h3>
+                        <p>Answers to your pressing questions</p>
+                    </div>
+                    <div class="service-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-sort-numeric-down text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Numerology</h3>
+                        <p>Unlock the power of numbers</p>
+                    </div>
+                    <div class="service-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-hand-paper text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Palmistry</h3>
+                        <p>Read the story in your hands</p>
+                    </div>
+                    <div class="service-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-user text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Face Reading</h3>
+                        <p>Discover insights from your features</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Astrology Section -->
+    <section class="py-8 sm:py-12 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center">About Astrology</h2>
+            <p class="text-base sm:text-lg text-center max-w-3xl mx-auto">
+                Astrology is the study of the movements and relative positions of celestial bodies as a means for divining information about human affairs and terrestrial events. With roots dating back thousands of years, astrology continues to provide insights and guidance to millions around the world.
+            </p>
+        </div>
+    </section>
+
+    
+    <!-- Top Astrologers Section -->
+    <section class="py-8 sm:py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center">Our Top Astrologers</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                {% for astrologer, info in astrologers.items() %}
+                <div class="astrologer-card bg-purple-100 rounded-lg shadow-md p-6">
+                    <img src="/static/images/pandit dummy.png" alt="{{ astrologer }}" class="w-32 h-32 rounded-full mx-auto mb-4">
+                    <h3 class="text-xl font-semibold mb-2 text-center">{{ astrologer }}</h3>
+                    <p class="text-center mb-4">Astrology Specialist</p>
+                    <p class="text-center mb-4">Status: 
+                        <span class="{{ 'text-green-600' if info['status'] == 'available' else 'text-red-600' }}">
+                            {{ info['status'].capitalize() }}
+                        </span>
+                    </p>
+                    <form action="{{ url_for('call') }}" method="post">
+                        <input type="hidden" name="astrologer" value="{{ astrologer }}">
+                        <button type="submit" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded">
+                            Call Now
+                        </button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="py-8 sm:py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center">What Our Clients Say</h2>
+            <div class="scroll-container">
+                <div class="scroll-content">
+                    <!-- First set of testimonials -->
+                    <div class="testimonial-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-quote-left text-4xl text-purple-600 mb-4"></i>
+                        <p class="mb-4">"Astro Insights changed my life! Their readings are incredibly accurate."</p>
+                        <p class="font-semibold">- Sarah J.</p>
+                    </div>
+                    <div class="testimonial-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-quote-left text-4xl text-purple-600 mb-4"></i>
+                        <p class="mb-4">"I was skeptical at first, but now I'm a believer. Thank you, Astro Insights!"</p>
+                        <p class="font-semibold">- Michael R.</p>
+                    </div>
+                    <div class="testimonial-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-quote-left text-4xl text-purple-600 mb-4"></i>
+                        <p class="mb-4">"The insights I received were profound and helped me make important decisions."</p>
+                        <p class="font-semibold">- Emily T.</p>
+                    </div>
+                    <!-- Duplicate set of testimonials for continuous scrolling -->
+                    <div class="testimonial-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-quote-left text-4xl text-purple-600 mb-4"></i>
+                        <p class="mb-4">"Astro Insights changed my life! Their readings are incredibly accurate."</p>
+                        <p class="font-semibold">- Sarah J.</p>
+                    </div>
+                    <div class="testimonial-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-quote-left text-4xl text-purple-600 mb-4"></i>
+                        <p class="mb-4">"I was skeptical at first, but now I'm a believer. Thank you, Astro Insights!"</p>
+                        <p class="font-semibold">- Michael R.</p>
+                    </div>
+                    <div class="testimonial-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-quote-left text-4xl text-purple-600 mb-4"></i>
+                        <p class="mb-4">"The insights I received were profound and helped me make important decisions."</p>
+                        <p class="font-semibold">- Emily T.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-purple-800 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap justify-between">
+                <div class="w-full sm:w-1/2 lg:w-1/3 mb-6 sm:mb-0">
+                    <h3 class="text-xl font-bold mb-4">Astro Insights</h3>
+                    <p>Unlocking cosmic wisdom for your journey</p>
+                </div>
+                <div class="w-full sm:w-1/2 lg:w-1/3 mb-6 sm:mb-0">
+                    <h3 class="text-xl font-bold mb-4">Quick Links</h3>
+                    <ul>
+                        <li><a href="/index" class="hover:text-purple-200">Home</a></li>
+                        <li><a href="/services" class="hover:text-purple-200">Services</a></li>
+                        <li><a href="/about" class="hover:text-purple-200">About</a></li>
+                        <li><a href="/contact" class="hover:text-purple-200">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="w-full sm:w-1/2 lg:w-1/3">
+                    <h3 class="text-xl font-bold mb-4">Connect With Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-2xl hover:text-purple-200"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-2xl hover:text-purple-200"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-2xl hover:text-purple-200"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-2xl hover:text-purple-200"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <p>&copy; 2024 Astro Insights. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            const menuOverlay = document.getElementById('menu-overlay');
+            menu.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+        }
+
+        document.getElementById('menu-toggle').addEventListener('click', toggleMenu);
+        document.getElementById('menu-overlay').addEventListener('click', toggleMenu);
+
+        function showLoginModal() {
+            document.getElementById('loginModal').classList.remove('hidden');
+        }
+
+        function hideLoginModal() {
+            document.getElementById('loginModal').classList.add('hidden');
+        }
+
+        function showRegisterModal() {
+            document.getElementById('registerModal').classList.remove('hidden');
+        }
+
+        function hideRegisterModal() {
+            document.getElementById('registerModal').classList.add('hidden');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const callButtons = document.querySelectorAll('.call-now-btn');
+            
+            callButtons.forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const astrologer = this.getAttribute('data-astrologer');
+                    
+                    // Submit a form to the /call route
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/call';
+                    
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'astrologer';
+                    input.value = astrologer;
+                    
+                    form.appendChild(input);
+                    document.body.appendChild(form);
+                    
+                    // Submit the form and handle the response
+                    form.addEventListener('submit', function(event) {
+                        event.preventDefault();
+                        fetch(form.action, {
+                            method: form.method,
+                            body: new FormData(form)
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                // Redirect the user based on their role
+                                window.location.href = response.url;
+                            } else {
+                                throw new Error('Network response was not ok');
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                            alert('An error occurred while trying to initiate the call: ' + error.message);
+                        });
+                    });
+                    
+                    form.submit();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

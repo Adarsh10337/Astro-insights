@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astro Insights - Your Personal Astrological Consultation</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .scroll-container {
+            overflow: hidden;
+            width: 100%;
+        }
+        .scroll-content {
+            display: flex;
+            width: 200%;
+            animation: scroll 40s linear infinite;
+        }
+        .scroll-content:hover {
+            animation-play-state: paused;
+        }
+        .service-card, .testimonial-card {
+            flex: 0 0 auto;
+            width: 250px;
+            margin-right: 20px;
+        }
+        .testimonial-container {
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: #9f7aea #e9d5ff;
+            padding-bottom: 20px; /* Add some padding for the scrollbar */
+        }
+        .testimonial-container::-webkit-scrollbar {
+            height: 8px;
+        }
+        .testimonial-container::-webkit-scrollbar-track {
+            background: #e9d5ff;
+        }
+        .testimonial-container::-webkit-scrollbar-thumb {
+            background-color: #9f7aea;
+            border-radius: 20px;
+            border: 3px solid #e9d5ff;
+        }
+        .testimonial-wrapper {
+            display: inline-flex;
+            flex-wrap: nowrap;
+        }
+        .testimonial-card {
+            flex: 0 0 auto;
+            width: 300px;
+            margin-right: 20px;
+            white-space: normal;
+        }
+        .testimonial-card:last-child {
+            margin-right: 0; /* Remove margin from the last card */
+        }
+
+        .astrologer-card {
+            transition: transform 0.3s ease-in-out;
+        }
+        .astrologer-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Top Ribbon -->
+    <div class="bg-purple-800 text-white py-2 px-4">
+        <div class="container mx-auto text-center">
+            <p>🌟 Special Offer: 20% off on all consultations this week! 🌟</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-purple-700 text-white p-4">
+        <nav class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Astro Insights</h1>
+            <ul class="flex space-x-4">
+                <li><a href="/index" class="hover:text-purple-200">Home</a></li>
+                <li><a href="/services" class="hover:text-purple-200">Services</a></li>
+                <li><a href="/about" class="hover:text-purple-200">About</a></li>
+                <li><a href="/contact" class="hover:text-purple-200">Contact</a></li>
+                <li><a href="/book" class="bg-purple-500 hover:bg-purple-600 px-3 py-1 rounded">Book Now</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Banner Image -->
+    <div class="w-full h-96 bg-cover" style="background-image: url('/static/back.jpg');">
+        <div class="w-full h-full flex items-center justify-center bg-black bg-opacity-50">
+            <h2 class="text-4xl font-bold text-white text-center">Discover Your Cosmic Path</h2>
+        </div>
+    </div>
+
+    <!-- Services Section -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold mb-8 text-center">Our Services</h2>
+            <div class="scroll-container">
+                <div class="scroll-content">
+                    <!-- First set of cards -->
+                    <div class="service-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-star text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Vedic Astrology</h3>
+                        <p>Ancient wisdom for modern life</p>
+                    </div>
+                    <div class="service-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-home text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Vastu</h3>
+                        <p>Harmonize your living spaces</p>
+                    </div>
+                    <div class="service-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-question-circle text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Horary</h3>
+                        <p>Answers to your pressing questions</p>
+                    </div>
+                    <div class="service-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-sort-numeric-down text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Numerology</h3>
+                        <p>Unlock the power of numbers</p>
+                    </div>
+                    <div class="service-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-hand-paper text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Palmistry</h3>
+                        <p>Read the story in your hands</p>
+                    </div>
+                    <div class="service-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-user text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Face Reading</h3>
+                        <p>Discover insights from your features</p>
+                    </div>
+                    <!-- Duplicate set of cards -->
+                    <div class="service-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-star text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Vedic Astrology</h3>
+                        <p>Ancient wisdom for modern life</p>
+                    </div>
+                    <div class="service-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-home text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Vastu</h3>
+                        <p>Harmonize your living spaces</p>
+                    </div>
+                    <div class="service-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-question-circle text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Horary</h3>
+                        <p>Answers to your pressing questions</p>
+                    </div>
+                    <div class="service-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-sort-numeric-down text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Numerology</h3>
+                        <p>Unlock the power of numbers</p>
+                    </div>
+                    <div class="service-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-hand-paper text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Palmistry</h3>
+                        <p>Read the story in your hands</p>
+                    </div>
+                    <div class="service-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-user text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Face Reading</h3>
+                        <p>Discover insights from your features</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Astrology Section -->
+    <section class="py-12 bg-gray-100">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold mb-8 text-center">About Astrology</h2>
+            <p class="text-lg text-center max-w-3xl mx-auto">
+                Astrology is the study of the movements and relative positions of celestial bodies as a means for divining information about human affairs and terrestrial events. With roots dating back thousands of years, astrology continues to provide insights and guidance to millions around the world.
+            </p>
+        </div>
+    </section>
+
+    <!-- Top Astrologers Section -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold mb-8 text-center">Our Top Astrologers</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Astrologer 1 -->
+                <div class="astrologer-card bg-purple-100 rounded-lg shadow-md p-6">
+                    <img src="/static/pandit dummy.png" alt="Astrologer 1" class="w-32 h-32 rounded-full mx-auto mb-4">
+                    <h3 class="text-xl font-semibold mb-2 text-center">Dr. Aisha Sharma</h3>
+                    <p class="text-center mb-4">Vedic Astrology Specialist</p>
+                    <ul class="text-sm">
+                        <li class="mb-1"><strong>Experience:</strong> 15+ years</li>
+                        <li class="mb-1"><strong>Customers Served:</strong> 10,000+</li>
+                        <li class="mb-1"><strong>Calls Taken:</strong> 8,500+</li>
+                        <li class="mb-1"><strong>Chats Completed:</strong> 15,000+</li>
+                    </ul>
+                </div>
+                
+                <!-- Astrologer 2 -->
+                <div class="astrologer-card bg-purple-100 rounded-lg shadow-md p-6">
+                    <img src="/static/pandit dummy.png" alt="Astrologer 2" class="w-32 h-32 rounded-full mx-auto mb-4">
+                    <h3 class="text-xl font-semibold mb-2 text-center">Pandit Rajesh Gupta</h3>
+                    <p class="text-center mb-4">Numerology Expert</p>
+                    <ul class="text-sm">
+                        <li class="mb-1"><strong>Experience:</strong> 20+ years</li>
+                        <li class="mb-1"><strong>Customers Served:</strong> 15,000+</li>
+                        <li class="mb-1"><strong>Calls Taken:</strong> 12,000+</li>
+                        <li class="mb-1"><strong>Chats Completed:</strong> 20,000+</li>
+                    </ul>
+                </div>
+                
+                <!-- Astrologer 3 -->
+                <div class="astrologer-card bg-purple-100 rounded-lg shadow-md p-6">
+                    <img src="/static/pandit dummy.png" alt="Astrologer 3" class="w-32 h-32 rounded-full mx-auto mb-4">
+                    <h3 class="text-xl font-semibold mb-2 text-center">Maya Desai</h3>
+                    <p class="text-center mb-4">Tarot and Palmistry Specialist</p>
+                    <ul class="text-sm">
+                        <li class="mb-1"><strong>Experience:</strong> 12+ years</li>
+                        <li class="mb-1"><strong>Customers Served:</strong> 8,000+</li>
+                        <li class="mb-1"><strong>Calls Taken:</strong> 6,500+</li>
+                        <li class="mb-1"><strong>Chats Completed:</strong> 11,000+</li>
+                    </ul>
+                </div>
+                
+                <!-- Astrologer 4 -->
+                <div class="astrologer-card bg-purple-100 rounded-lg shadow-md p-6">
+                    <img src="/static/pandit dummy.png" alt="Astrologer 4" class="w-32 h-32 rounded-full mx-auto mb-4">
+                    <h3 class="text-xl font-semibold mb-2 text-center">Dr. Amit Kapoor</h3>
+                    <p class="text-center mb-4">Vastu and Feng Shui Expert</p>
+                    <ul class="text-sm">
+                        <li class="mb-1"><strong>Experience:</strong> 18+ years</li>
+                        <li class="mb-1"><strong>Customers Served:</strong> 12,000+</li>
+                        <li class="mb-1"><strong>Calls Taken:</strong> 9,000+</li>
+                        <li class="mb-1"><strong>Chats Completed:</strong> 16,000+</li>
+                    </ul>
+                </div>
+                
+                <!-- Astrologer 5 -->
+                <div class="astrologer-card bg-purple-100 rounded-lg shadow-md p-6">
+                    <img src="/static/pandit dummy.png" alt="Astrologer 5" class="w-32 h-32 rounded-full mx-auto mb-4">
+                    <h3 class="text-xl font-semibold mb-2 text-center">Priya Malhotra</h3>
+                    <p class="text-center mb-4">Relationship and Career Astrologer</p>
+                    <ul class="text-sm">
+                        <li class="mb-1"><strong>Experience:</strong> 10+ years</li>
+                        <li class="mb-1"><strong>Customers Served:</strong> 7,000+</li>
+                        <li class="mb-1"><strong>Calls Taken:</strong> 5,500+</li>
+                        <li class="mb-1"><strong>Chats Completed:</strong> 9,000+</li>
+                    </ul>
+                </div>
+                
+                <!-- Astrologer 6 -->
+                <div class="astrologer-card bg-purple-100 rounded-lg shadow-md p-6">
+                    <img src="/static/pandit dummy.png" alt="Astrologer 6" class="w-32 h-32 rounded-full mx-auto mb-4">
+                    <h3 class="text-xl font-semibold mb-2 text-center">Guru Sanjay Shastri</h3>
+                    <p class="text-center mb-4">Vedic Rituals and Remedies Specialist</p>
+                    <ul class="text-sm">
+                        <li class="mb-1"><strong>Experience:</strong> 25+ years</li>
+                        <li class="mb-1"><strong>Customers Served:</strong> 20,000+</li>
+                        <li class="mb-1"><strong>Calls Taken:</strong> 15,000+</li>
+                        <li class="mb-1"><strong>Chats Completed:</strong> 25,000+</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Testimonials Section -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold mb-8 text-center">What Our Clients Say</h2>
+            <div class="scroll-container">
+                <div class="scroll-content">
+                    <!-- First set of testimonials -->
+                    <div class="testimonial-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-quote-left text-4xl text-purple-600 mb-4"></i>
+                        <p class="mb-4">"Astro Insights changed my life! Their readings are incredibly accurate."</p>
+                        <p class="font-semibold">- Sarah J.</p>
+                    </div>
+                    <div class="testimonial-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-quote-left text-4xl text-purple-600 mb-4"></i>
+                        <p class="mb-4">"I was skeptical at first, but now I'm a believer. Thank you, Astro Insights!"</p>
+                        <p class="font-semibold">- Michael R.</p>
+                    </div>
+                    <div class="testimonial-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-quote-left text-4xl text-purple-600 mb-4"></i>
+                        <p class="mb-4">"The insights I received were profound and helped me make important decisions."</p>
+                        <p class="font-semibold">- Emily T.</p>
+                    </div>
+                    <!-- Duplicate set of testimonials -->
+                    <div class="testimonial-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-quote-left text-4xl text-purple-600 mb-4"></i>
+                        <p class="mb-4">"Astro Insights changed my life! Their readings are incredibly accurate."</p>
+                        <p class="font-semibold">- Sarah J.</p>
+                    </div>
+                    <div class="testimonial-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-quote-left text-4xl text-purple-600 mb-4"></i>
+                        <p class="mb-4">"I was skeptical at first, but now I'm a believer. Thank you, Astro Insights!"</p>
+                        <p class="font-semibold">- Michael R.</p>
+                    </div>
+                    <div class="testimonial-card bg-purple-100 rounded-lg p-6 text-center">
+                        <i class="fas fa-quote-left text-4xl text-purple-600 mb-4"></i>
+                        <p class="mb-4">"The insights I received were profound and helped me make important decisions."</p>
+                        <p class="font-semibold">- Emily T.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-purple-800 text-white py-8">
+        <div class="container mx-auto">
+            <div class="flex flex-wrap justify-between">
+                <div class="w-full md:w-1/3 mb-6 md:mb-0">
+                    <h3 class="text-xl font-bold mb-4">Astro Insights</h3>
+                    <p>Unlocking cosmic wisdom for your journey</p>
+                </div>
+                <div class="w-full md:w-1/3 mb-6 md:mb-0">
+                    <h3 class="text-xl font-bold mb-4">Quick Links</h3>
+                    <ul>
+                        <li><a href="/index" class="hover:text-purple-200">Home</a></li>
+                        <li><a href="/services" class="hover:text-purple-200">Services</a></li>
+                        <li><a href="/about" class="hover:text-purple-200">About</a></li>
+                        <li><a href="/contact" class="hover:text-purple-200">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="w-full md:w-1/3">
+                    <h3 class="text-xl font-bold mb-4">Connect With Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-2xl hover:text-purple-200"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-2xl hover:text-purple-200"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-2xl hover:text-purple-200"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-2xl hover:text-purple-200"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <p>&copy; 2024 Astro Insights. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

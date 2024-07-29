@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astro Insights - Our Services</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .service-card {
+            transition: transform 0.3s ease-in-out;
+        }
+        .service-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Top Ribbon -->
+    <div class="bg-purple-800 text-white py-2 px-4">
+        <div class="container mx-auto text-center">
+            <p>🌟 Special Offer: 20% off on all consultations this week! 🌟</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-purple-700 text-white p-4">
+        <nav class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Astro Insights</h1>
+            <ul class="flex space-x-4">
+                <li><a href="/index" class="hover:text-purple-200">Home</a></li>
+                <li><a href="/services" class="hover:text-purple-200">Services</a></li>
+                <li><a href="/about" class="hover:text-purple-200">About</a></li>
+                <li><a href="/contact" class="hover:text-purple-200">Contact</a></li>
+                <li><a href="/book" class="bg-purple-500 hover:bg-purple-600 px-3 py-1 rounded">Book Now</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto py-8">
+        <h1 class="text-4xl font-bold text-center mb-8">Our Astrological Services</h1>
+
+        <!-- Introduction to Astrology -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold mb-4">What is Astrology?</h2>
+            <p class="text-lg mb-4">
+                Astrology is the study of the movements and relative positions of celestial bodies, interpreted as having an influence on human affairs and terrestrial events. This ancient practice has roots dating back thousands of years and continues to provide insights and guidance to millions around the world.
+            </p>
+            <p class="text-lg mb-4">
+                The origin of astrology can be traced to ancient civilizations such as Mesopotamia, Egypt, and India. It has evolved over millennia, incorporating various cultural and philosophical elements.
+            </p>
+            <p class="text-lg">
+                In Hindu tradition, astrology is mentioned in several Puranas, including the Brihat Parashara Hora Shastra and Brihat Samhita. These ancient texts form the foundation of Vedic astrology, providing detailed guidelines for astrological practices and interpretations.
+            </p>
+        </section>
+
+        <!-- Services Grid -->
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Vedic Astrology -->
+            <div class="service-card bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-2xl font-semibold mb-4">Vedic Astrology</h3>
+                <p class="mb-4">
+                    Vedic astrology, also known as Jyotish, is an ancient Indian system of astrology. It uses the sidereal zodiac and provides insights into various aspects of life, including personality, relationships, career, and spiritual growth.
+                </p>
+                <a href="#" class="text-purple-600 hover:text-purple-800">Learn more →</a>
+            </div>
+
+            <!-- Tarot Reading -->
+            <div class="service-card bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-2xl font-semibold mb-4">Tarot Reading</h3>
+                <p class="mb-4">
+                    Tarot reading uses a deck of 78 cards to gain insights into past, present, and future events. Our experienced readers can help you navigate life's challenges and make informed decisions.
+                </p>
+                <a href="#" class="text-purple-600 hover:text-purple-800">Learn more →</a>
+            </div>
+
+            <!-- Numerology -->
+            <div class="service-card bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-2xl font-semibold mb-4">Numerology</h3>
+                <p class="mb-4">
+                    Numerology is the study of the mystical relationship between numbers and events. We offer personalized numerology readings to help you understand your life path, destiny, and personal year numbers.
+                </p>
+                <a href="#" class="text-purple-600 hover:text-purple-800">Learn more →</a>
+            </div>
+
+            <!-- Prashna (Horary Astrology) -->
+            <div class="service-card bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-2xl font-semibold mb-4">Prashna (Horary Astrology)</h3>
+                <p class="mb-4">
+                    Prashna is a branch of Vedic astrology that provides answers to specific questions based on the time they are asked. It's an excellent tool for gaining quick insights into pressing matters.
+                </p>
+                <a href="#" class="text-purple-600 hover:text-purple-800">Learn more →</a>
+            </div>
+
+            <!-- Marriage and Relationship Counseling -->
+            <div class="service-card bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-2xl font-semibold mb-4">Marriage and Relationship Counseling</h3>
+                <p class="mb-4">
+                    Our astrological experts provide insights into compatibility, potential challenges, and solutions for marital and relationship issues. We offer guidance to strengthen bonds and navigate conflicts.
+                </p>
+                <a href="#" class="text-purple-600 hover:text-purple-800">Learn more →</a>
+            </div>
+
+            <!-- Career and Business Astrology -->
+            <div class="service-card bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-2xl font-semibold mb-4">Career and Business Astrology</h3>
+                <p class="mb-4">
+                    Discover your professional strengths, ideal career paths, and auspicious times for business ventures. Our career astrology services help you make informed decisions about your professional life.
+                </p>
+                <a href="#" class="text-purple-600 hover:text-purple-800">Learn more →</a>
+            </div>
+
+            <!-- Child Astrology -->
+            <div class="service-card bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-2xl font-semibold mb-4">Child Astrology</h3>
+                <p class="mb-4">
+                    Understand your child's potential, talents, and challenges through astrological analysis. Our child astrology services provide insights to help parents nurture their child's unique gifts.
+                </p>
+                <a href="#" class="text-purple-600 hover:text-purple-800">Learn more →</a>
+            </div>
+
+            <!-- Travel and Foreign Trips -->
+            <div class="service-card bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-2xl font-semibold mb-4">Travel and Foreign Trips</h3>
+                <p class="mb-4">
+                    Planning a journey? Our astrological guidance can help you choose auspicious travel dates, understand potential challenges, and make the most of your trips abroad.
+                </p>
+                <a href="#" class="text-purple-600 hover:text-purple-800">Learn more →</a>
+            </div>
+
+            <!-- Problem-Solving Astrology -->
+            <div class="service-card bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-2xl font-semibold mb-4">Problem-Solving Astrology</h3>
+                <p class="mb-4">
+                    Face life's challenges with confidence. Our problem-solving astrological services offer insights and remedies for various issues, including health, finances, and personal growth.
+                </p>
+                <a href="#" class="text-purple-600 hover:text-purple-800">Learn more →</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-purple-800 text-white py-8">
+        <div class="container mx-auto">
+            <div class="flex flex-wrap justify-between">
+                <div class="w-full md:w-1/3 mb-6 md:mb-0">
+                    <h3 class="text-xl font-bold mb-4">Astro Insights</h3>
+                    <p>Unlocking cosmic wisdom for your journey</p>
+                </div>
+                <div class="w-full md:w-1/3 mb-6 md:mb-0">
+                    <h3 class="text-xl font-bold mb-4">Quick Links</h3>
+                    <ul>
+                        <li><a href="/index" class="hover:text-purple-200">Home</a></li>
+                        <li><a href="/services" class="hover:text-purple-200">Services</a></li>
+                        <li><a href="/about" class="hover:text-purple-200">About</a></li>
+                        <li><a href="/contact" class="hover:text-purple-200">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="w-full md:w-1/3">
+                    <h3 class="text-xl font-bold mb-4">Connect With Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-2xl hover:text-purple-200"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-2xl hover:text-purple-200"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-2xl hover:text-purple-200"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-2xl hover:text-purple-200"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <p>&copy; 2024 Astro Insights. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
