@@ -1,0 +1,227 @@
+{% extends 'layout.html' %}
+{% block title %}Chat with {{ astrologer }}{% endblock %}
+{% block content %}
+
+<div class="container mx-auto px-4 py-4 flex flex-col h-screen">
+    <div class="flex justify-between items-center mb-4">
+        <h1 class="text-2xl sm:text-3xl font-bold">Chat with {{ astrologer }}</h1>
+        <div id="chat-status" class="text-lg font-semibold text-green-600">Connected</div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-4 flex-grow">
+        <div class="flex flex-col w-full sm:w-3/4">
+            <div id="messages" class="bg-white rounded-lg shadow p-4 mb-4 flex-grow overflow-y-auto h-[calc(100vh-300px)]"></div>
+
+            <div class="flex flex-col sm:flex-row mb-4">
+                <input type="text" id="message-input" class="flex-grow rounded-l-lg p-2 border border-gray-300 focus:outline-none focus:border-purple-500" placeholder="Type your message..." disabled>
+                <button id="send-button" class="bg-purple-600 text-white rounded-r-lg px-4 py-2 hover:bg-purple-700 focus:outline-none focus:shadow-outline" disabled>Send</button>
+            </div>
+
+            <div class="flex justify-between">
+                <button id="leave-chat" class="bg-red-500 text-white rounded-lg px-4 py-2 hover:bg-red-600 focus:outline-none focus:shadow-outline">Leave Chat</button>
+                <button id="toggle-audio" class="bg-blue-500 text-white rounded-lg px-4 py-2 hover:bg-blue-600 focus:outline-none focus:shadow-outline">Enable Audio</button>
+            </div>
+        </div>
+
+        <div class="w-full sm:w-1/4 flex flex-col gap-4">
+            <div id="chat-info" class="bg-white rounded-lg shadow p-4">
+                <h2 class="text-xl font-bold mb-2">Chat Information</h2>
+                <p>Duration: <span id="chat-duration">00:00</span></p>
+                <p>Queue Position: <span id="queue-position">N/A</span></p>
+            </div>
+
+            <div id="quick-responses" class="bg-white rounded-lg shadow p-4">
+                <h2 class="text-xl font-bold mb-2">Quick Responses</h2>
+                <button class="bg-gray-200 hover:bg-gray-300 rounded px-2 py-1 mb-2 w-full text-left">Thank you for your question.</button>
+                <button class="bg-gray-200 hover:bg-gray-300 rounded px-2 py-1 mb-2 w-full text-left">Could you please provide more details?</button>
+                <button class="bg-gray-200 hover:bg-gray-300 rounded px-2 py-1 mb-2 w-full text-left">I understand your concern.</button>
+            </div>
+
+            {% if user_type == 'astrologer' %}
+            <div id="user-notes" class="bg-white rounded-lg shadow p-4">
+                <h2 class="text-xl font-bold mb-2">User Notes</h2>
+                <textarea id="notes-input" class="w-full h-32 p-2 border border-gray-300 rounded focus:outline-none focus:border-purple-500" placeholder="Enter notes here..."></textarea>
+                <button id="save-notes" class="mt-2 bg-green-500 text-white rounded-lg px-4 py-2 hover:bg-green-600 focus:outline-none focus:shadow-outline">Save Notes</button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script>
+    const socket = io();
+    const messages = document.getElementById('messages');
+    const messageInput = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-button');
+    const leaveButton = document.getElementById('leave-chat');
+    const toggleAudioButton = document.getElementById('toggle-audio');
+    const chatStatus = document.getElementById('chat-status');
+    const chatDuration = document.getElementById('chat-duration');
+    const queuePosition = document.getElementById('queue-position');
+    const room = "{{ room }}";
+    const userType = "{{ user_type }}";
+    let astrologerJoined = false;
+
+    let audioEnabled = false;
+    let chatStartTime;
+
+    socket.on('connect', () => {
+        socket.emit('join', { room: room });
+    });
+
+    socket.on('message', (data) => {
+        const messagesDiv = document.getElementById('messages');
+        const messageElement = document.createElement('div');
+        messageElement.textContent = `${data.user}: ${data.msg}`;
+        messagesDiv.appendChild(messageElement);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+        if (audioEnabled) {
+            playMessageSound();
+        }
+    });
+
+    socket.on('status', (data) => {
+        const statusElement = document.createElement('div');
+        statusElement.classList.add('text-center', 'text-gray-500', 'my-2');
+        statusElement.textContent = data.msg;
+        messages.appendChild(statusElement);
+
+        if (data.msg.includes('has joined the call')) {
+            chatStartTime = new Date();
+            updateChatDuration();
+        }
+    });
+
+    socket.on('astrologer_joined', () => {
+        astrologerJoined = true;
+        document.getElementById('message-input').disabled = false;
+        document.getElementById('send-button').disabled = false;
+        const messageElement = document.createElement('div');
+        messageElement.textContent = "Astrologer has joined the chat. You can now send messages.";
+        messageElement.style.color = "green";
+        document.getElementById('messages').appendChild(messageElement);
+    });
+
+    socket.on('error', (data) => {
+        const messageElement = document.createElement('div');
+        messageElement.textContent = data.msg;
+        messageElement.style.color = "red";
+        document.getElementById('messages').appendChild(messageElement);
+    });
+
+    document.getElementById('send-button').addEventListener('click', () => {
+        const messageInput = document.getElementById('message-input');
+        const message = messageInput.value.trim();
+        if (message) {
+            socket.emit('message', { msg: message, room: room });
+            messageInput.value = '';
+        }
+    });
+
+    document.getElementById('message-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            document.getElementById('send-button').click();
+        }
+    });
+
+    document.getElementById('leave-chat').addEventListener('click', () => {
+        socket.emit('leave_chat', { room: room });
+        window.location.href = '/';
+    });
+
+    socket.on('chat_ended', () => {
+        alert('The chat has ended. You will be redirected to the home page.');
+        window.location.href = "{{ url_for('index') }}";
+    });
+
+    socket.on('queue_update', (data) => {
+        queuePosition.textContent = `Queue Position: ${data.position}`;
+    });
+
+    socket.on('disconnect', () => {
+        chatStatus.textContent = 'Disconnected';
+        chatStatus.classList.remove('text-green-600');
+        chatStatus.classList.add('text-red-600');
+    });
+
+    sendButton.addEventListener('click', sendMessage);
+    messageInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+    leaveButton.addEventListener('click', () => {
+            socket.emit('leave_chat', { room: room });
+            window.location.href = "{{ url_for('index') }}";
+        }
+    );
+
+    toggleAudioButton.addEventListener('click', () => {
+        audioEnabled = !audioEnabled;
+        toggleAudioButton.textContent = audioEnabled ? 'Disable Audio' : 'Enable Audio';
+    });
+
+    document.querySelectorAll('.quick-response-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            messageInput.value = btn.textContent;
+            sendMessage();
+        });
+    });
+
+    if (userType === 'astrologer') {
+        document.getElementById('save-notes').addEventListener('click', () => {
+            const notes = document.getElementById('user-notes-input').value;
+            fetch('/save_user_notes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ room: room, notes: notes }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Notes saved successfully');
+                } else {
+                    alert('Failed to save notes');
+                }
+            });
+        });
+    }
+
+    function sendMessage() {
+        if (messageInput.value.trim()) {
+            socket.emit('message', { msg: messageInput.value, room: room });
+            messageInput.value = '';
+        }
+    }
+
+    function updateChatDuration() {
+        if (chatStartTime) {
+            const now = new Date();
+            const duration = now - chatStartTime;
+            const minutes = Math.floor(duration / 60000);
+            const seconds = Math.floor((duration % 60000) / 1000);
+            chatDuration.textContent = `Duration: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        setTimeout(updateChatDuration, 1000);
+    }
+
+    function playMessageSound() {
+        const audio = new Audio('/static/message_sound.mp3');  // You'll need to add this sound file
+        audio.play();
+    }
+
+    if (userType === 'user' && !astrologerJoined) {
+        const messageElement = document.createElement('div');
+        messageElement.textContent = "Please wait for the astrologer to join the chat.";
+        messageElement.style.color = "blue";
+        document.getElementById('messages').appendChild(messageElement);
+    }
+
+    updateChatDuration();
+</script>
+{% endblock %}

@@ -1,0 +1,400 @@
+{% extends 'layout.html' %}
+{% block title %}Astrologer Dashboard{% endblock %}
+{% block content %}
+
+<div class="bg-purple-700 text-white p-4">
+    <div class="container mx-auto flex justify-between items-center">
+        <h1 id="astrologer-dashboard" class="text-xl sm:text-2xl font-bold">Astrologer Dashboard</h1>
+        <button id="mobileMenuBtn" class="sm:hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+            </svg>
+        </button>
+    </div>
+</div>
+
+<div id="mobileMenu" class="hidden sm:hidden bg-purple-600 text-white p-4">
+    <a href="#activeChats" class="block py-2 hover:text-purple-200">Active Chats</a>
+    <a href="#queueManagement" class="block py-2 hover:text-purple-200">Queue Management</a>
+    <a href="#workHistory" class="block py-2 hover:text-purple-200">Work History</a>
+    <a href="{{ url_for('logout') }}" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Logout</a>
+</div>
+
+<div class="container mx-auto mt-4 p-4" role="main">
+    <h2 class="text-xl sm:text-2xl font-bold mb-4">Welcome, {{ astrologer }}</h2>
+
+    <div class="mb-6">
+        <h3 class="text-lg font-bold mb-2">Your Status</h3>
+        <select id="statusSelect" class="border rounded p-2">
+            <option value="available">Available</option>
+            <option value="busy">Busy</option>
+            <option value="offline">Offline</option>
+        </select>
+        <button onclick="updateStatus()" class="bg-purple-500 text-white px-4 py-2 rounded ml-2">Update Status</button>
+    </div>
+
+    <div id="activeChats" class="bg-white rounded-lg shadow p-4 mb-6">
+        <h3 class="text-lg sm:text-xl font-bold mb-4">Active Chats</h3>
+        <div id="chatList" class="space-y-2">
+            <!-- Active chats will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <div id="queueManagement" class="bg-white rounded-lg shadow p-4 mb-6 hidden sm:block">
+        <h3 class="text-lg sm:text-xl font-bold mb-4">Queue Management</h3>
+        <p>Current Queue Length: <span id="queueLength">{{ queue_length }}</span></p>
+        <div id="queueList" class="mt-2">
+            <!-- Queue will be populated here -->
+        </div>
+    </div>
+
+    <div id="workHistory" class="bg-white rounded-lg shadow p-4 mb-6 hidden sm:block">
+        <h3 class="text-lg sm:text-xl font-bold mb-4">Work History</h3>
+        <div id="workHistoryList">
+            <!-- Work history will be populated here -->
+        </div>
+    </div>
+</div>
+
+<div id="chatWindow" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+    <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
+        <h3 id="chatTitle" class="text-lg sm:text-xl font-bold mb-4">Chat with <span id="currentUser"></span></h3>
+        <div id="messages" class="h-64 sm:h-96 overflow-y-auto mb-4 p-2 border rounded"></div>
+        <div class="flex mb-4">
+            <input type="text" id="messageInput" class="flex-grow mr-2 p-2 border rounded" placeholder="Type your message...">
+            <button onclick="sendMessage()" class="bg-purple-500 text-white px-4 py-2 rounded">Send</button>
+        </div>
+        <div class="mb-4">
+            <textarea id="userNotes" class="w-full p-2 border rounded" rows="3" placeholder="User notes..."></textarea>
+            <button onclick="saveNotes()" class="bg-green-500 text-white px-4 py-2 rounded mt-2">Save Notes</button>
+        </div>
+        <button onclick="leaveChat()" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
+            Leave Chat
+        </button>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script>
+    const socket = io();
+    let currentRoom = null;
+    const currentAstrologer = "{{ session.username }}";
+
+    // Mobile menu toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    mobileMenuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+
+    // Section visibility control
+    const activeChats = document.getElementById('activeChats');
+    const queueManagement = document.getElementById('queueManagement');
+    const workHistory = document.getElementById('workHistory');
+
+    function showSection(sectionId) {
+        activeChats.classList.remove('hidden');
+        queueManagement.classList.add('hidden');
+        workHistory.classList.add('hidden');
+
+        if (sectionId === 'queueManagement') {
+            queueManagement.classList.remove('hidden');
+        } else if (sectionId === 'workHistory') {
+            workHistory.classList.remove('hidden');
+        }
+    }
+
+    // Add click event listeners to menu items
+    document.querySelectorAll('#mobileMenu a').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const sectionId = e.target.getAttribute('href').slice(1);
+            showSection(sectionId);
+            mobileMenu.classList.add('hidden');
+        });
+    });
+
+    // Show only active chats by default on mobile
+    if (window.innerWidth < 640) {
+        showSection('activeChats');
+    }
+
+    // Update astrologer status
+    function updateStatus() {
+        const status = document.getElementById('statusSelect').value;
+        fetch('/update_astrologer_status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `astrologer={{ astrologer }}&status=${status}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Status updated successfully');
+            } else {
+                alert('Failed to update status');
+            }
+        });
+    }
+
+    // Fetch and display active chats
+    function fetchActiveChats() {
+        fetch('/get_active_chats')
+        .then(response => response.json())
+        .then(data => {
+            const chatList = document.getElementById('chatList');
+            chatList.innerHTML = '';
+            for (const [room, chat] of Object.entries(data.active_chats)) {
+                const chatDiv = document.createElement('div');
+                chatDiv.className = 'p-2 border rounded mb-2';
+                chatDiv.innerHTML = `
+                    <p>User: ${chat.user}</p>
+                    <p>Status: ${chat.status}</p>
+                    <button onclick="joinChat('${room}')" class="bg-blue-500 text-white px-2 py-1 rounded mt-1">Join Chat</button>
+                    <button onclick="leaveChat('${room}')" class="bg-red-500 text-white px-2 py-1 rounded mt-1 ml-2">Leave Chat</button>
+                `;
+                chatList.appendChild(chatDiv);
+            }
+        });
+    }
+
+
+    function updateActiveChatsList(active_chats) {
+        const chatList = document.getElementById('chatList');
+        chatList.innerHTML = ''; // Clear existing chats
+
+        for (const [room, chat] of Object.entries(active_chats)) {
+            if (chat.astrologer === currentAstrologer) {
+                const chatEntry = document.createElement('div');
+                chatEntry.id = `chat-${room}`;
+                chatEntry.className = 'mb-2 p-2 bg-gray-100 rounded';
+                chatEntry.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span>${chat.user}</span>
+                        <button onclick="leaveChat('${room}')" class="bg-red-500 text-white px-2 py-1 rounded">Leave Chat</button>
+                    </div>
+                `;
+                chatList.appendChild(chatEntry);
+            }
+        }
+    }
+
+    function joinChat(room) {
+        // Implement the logic to join the chat room
+        window.location.href = `/call_room/${astrologer}?room=${room}`;
+    }
+
+
+    // Fetch and display queue
+    function fetchQueue() {
+        fetch('/get_queue')
+        .then(response => response.json())
+        .then(data => {
+            const queueList = document.getElementById('queueList');
+            queueList.innerHTML = '';
+            data.queue.forEach(user => {
+                const userDiv = document.createElement('div');
+                userDiv.className = 'p-2 border rounded mb-2';
+                userDiv.innerHTML = `
+                    <p>${user}</p>
+                    <button onclick="removeFromQueue('${user}')" class="bg-red-500 text-white px-2 py-1 rounded mt-1">Remove</button>
+                `;
+                queueList.appendChild(userDiv);
+            });
+            document.getElementById('queueLength').textContent = data.queue.length;
+        });
+    }
+
+    // Fetch and display work history
+    function fetchWorkHistory() {
+        fetch('/get_work_history')
+        .then(response => response.json())
+        .then(data => {
+            const workHistoryList = document.getElementById('workHistoryList');
+            workHistoryList.innerHTML = '';
+            data.work_history.forEach(entry => {
+                const entryDiv = document.createElement('div');
+                entryDiv.className = 'p-2 border rounded mb-2';
+                entryDiv.innerHTML = `
+                    <p>User: ${entry.user}</p>
+                    <p>Duration: ${entry.duration.toFixed(2)} seconds</p>
+                    <p>End Time: ${entry.end_time}</p>
+                    <p>Notes: ${entry.notes}</p>
+                `;
+                workHistoryList.appendChild(entryDiv);
+            });
+        });
+    }
+
+    socket.on('connect', () => {
+        console.log('Connected to server');
+    });
+
+    socket.on('update_active_chats', (data) => {
+        console.log('Received update_active_chats event:', data);
+        updateActiveChatsList(data.active_chats);
+    });
+    
+
+    // Join chat function
+    function joinChat(room) {
+        currentRoom = room;
+        socket.emit('join', {room: room});
+        document.getElementById('chatWindow').classList.remove('hidden');
+        document.getElementById('currentUser').textContent = room;
+    }
+
+    // Send message function
+    function sendMessage() {
+        const messageInput = document.getElementById('messageInput');
+        const message = messageInput.value.trim();
+        if (message && currentRoom) {
+            socket.emit('message', {msg: message, room: currentRoom});
+            messageInput.value = '';
+        }
+    }
+
+    // Save notes function
+    function saveNotes() {
+        const notes = document.getElementById('userNotes').value;
+        if (currentRoom) {
+            fetch('/save_user_notes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({room: currentRoom, notes: notes})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Notes saved successfully');
+                } else {
+                    alert('Failed to save notes');
+                }
+            });
+        }
+    }
+
+    // Leave chat function
+    function leaveChat(room) {
+        if (room) {
+            currentRoom = room;
+        }
+        if (currentRoom) {
+            
+            currentRoom = null;
+            document.getElementById('chatWindow').classList.add('hidden');
+            document.getElementById('messages').innerHTML = '';
+            document.getElementById('userNotes').value = '';
+            fetchActiveChats(); // Refresh the active chats list
+        }
+    }
+
+    socket.on('leave_error', function(data) {
+        alert(data.message);
+    });
+
+    // Remove user from queue
+    function removeFromQueue(user) {
+        fetch('/remove_from_queue', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({user: user})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                fetchQueue();
+            } else {
+                alert('Failed to remove user from queue');
+            }
+        });
+    }
+
+    // Socket event listeners
+    socket.on('message', function(data) {
+        const messagesDiv = document.getElementById('messages');
+        const messageElem = document.createElement('p');
+        messageElem.textContent = `${data.user}: ${data.msg}`;
+        messagesDiv.appendChild(messageElem);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    });
+
+    socket.on('user_left', function(data) {
+        const messagesDiv = document.getElementById('messages');
+        const messageElem = document.createElement('p');
+        messageElem.textContent = `${data.user} has left the chat.`;
+        messagesDiv.appendChild(messageElem);
+    });
+
+    socket.on('chat_ended', function(data) {
+        if (data.room === currentRoom) {
+            alert('The chat has ended.');
+            leaveChat();
+        }
+        fetchActiveChats(); // Refresh the active chats list
+    });
+
+    // New feature: Notify astrologer when a new chat is available
+    socket.on('new_chat', function(data) {
+        alert(`New chat available with user: ${data.user}`);
+        fetchActiveChats(); // Refresh the active chats list
+    });
+
+    document.getElementById('logoutButton').addEventListener('click', function(e) {
+        e.preventDefault();
+        fetch('/logout', {
+            method: 'GET',
+            credentials: 'same-origin'
+        }).then(response => {
+            if (response.ok) {
+                window.location.href = '/';
+            }
+        });
+    });
+
+    // New feature: Display chat duration
+    let chatStartTime;
+    function updateChatDuration() {
+        if (currentRoom) {
+            const duration = Math.floor((Date.now() - chatStartTime) / 1000);
+            const minutes = Math.floor(duration / 60);
+            const seconds = duration % 60;
+            document.getElementById('chatDuration').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+    }
+
+    // New feature: Start chat duration timer when joining a chat
+    function startChatDurationTimer() {
+        chatStartTime = Date.now();
+        setInterval(updateChatDuration, 1000);
+    }
+
+    // Modify joinChat function to start the duration timer
+    function joinChat(room) {
+        currentRoom = room;
+        socket.emit('join', {room: room});
+        document.getElementById('chatWindow').classList.remove('hidden');
+        document.getElementById('currentUser').textContent = room;
+        startChatDurationTimer();
+    }
+
+    // Fetch data periodically
+    setInterval(() => {
+        fetchActiveChats();
+        fetchQueue();
+        fetchWorkHistory();
+    }, 5000);  // Fetch every 5 seconds
+
+    // Initial fetch
+    fetchActiveChats();
+    fetchQueue();
+    fetchWorkHistory();
+</script>
+
+{% endblock %}

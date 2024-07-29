@@ -1,0 +1,97 @@
+{% extends 'layout.html' %}
+{% block title %}Call with {{ astrologer }}{% endblock %}
+{% block content %}
+
+<div class="container mx-auto px-4 py-4 flex flex-col h-screen">
+    <h1 id="chat-with-astrologer" class="text-2xl sm:text-3xl font-bold mb-4">Chat with {{ astrologer }}</h1>
+
+    <div id="messages" class="bg-white rounded-lg shadow p-4 mb-4 flex-grow overflow-y-auto">
+        <!-- Messages will be dynamically added here -->
+    </div>
+
+    <div class="flex flex-col sm:flex-row mb-4">
+        <input type="text" id="message" class="flex-grow p-2 border rounded-l" placeholder="Type your message...">
+        <button onclick="sendMessage()" class="bg-purple-600 text-white px-4 py-2 rounded-r">Send</button>
+    </div>
+
+    <button onclick="leaveChat()" class="bg-red-500 text-white px-4 py-2 rounded">Leave Chat</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script>
+    const socket = io();
+    let currentRoom = '{{ room }}';
+
+    socket.on('connect', () => {
+        console.log('Connected to server');
+        socket.emit('join', { room: currentRoom });
+    });
+
+    socket.on('message', (data) => {
+        if (data.room === currentRoom && data.user !== '{{ session.username }}') {
+            displayMessage(data);
+        }
+    });
+
+    socket.on('status', (data) => {
+        console.log(data.msg);
+        displaySystemMessage(data.msg);
+    });
+
+    socket.on('chat_history', (data) => {
+        data.messages.forEach(displayMessage);
+    });
+
+    socket.on('chat_ended', () => {
+        displaySystemMessage('The chat has ended.');
+    });
+
+    socket.on('astrologer_left', () => {
+        displaySystemMessage('The astrologer has left the chat.');
+    });
+
+    function sendMessage() {
+        const messageInput = document.getElementById('message');
+        const message = messageInput.value.trim();
+        if (message) {
+            const messageData = { msg: message, user: '{{ session.username }}', timestamp: Date.now() / 1000, room: currentRoom };
+            socket.emit('message', messageData);
+            displayMessage(messageData); // Display the message locally
+            messageInput.value = '';
+        }
+    }
+
+    function displayMessage(data) {
+        const messagesDiv = document.getElementById('messages');
+        const messageElement = document.createElement('div');
+        messageElement.className = 'mb-2';
+        const time = new Date(data.timestamp * 1000).toLocaleTimeString();
+        messageElement.innerHTML = `<strong>${data.user}</strong> (${time}): ${data.msg}`;
+        messagesDiv.appendChild(messageElement);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function displaySystemMessage(message) {
+        const messagesDiv = document.getElementById('messages');
+        const messageElement = document.createElement('div');
+        messageElement.className = 'mb-2 text-gray-500 italic';
+        messageElement.textContent = message;
+        messagesDiv.appendChild(messageElement);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function leaveChat() {
+        socket.emit('leave_chat', { room: currentRoom });
+        window.location.href = '{{ url_for("index") }}';
+    }
+
+    // Add event listener for Enter key in message input
+    document.getElementById('message').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            sendMessage();
+        }
+    });
+</script>
+
+{% endblock %}
